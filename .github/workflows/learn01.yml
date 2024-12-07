@@ -1,0 +1,37 @@
+name: test_workflow
+
+on: [workflow_dispatch]
+
+env:
+  CONTAINER_REGISTRY: docker.io
+  IMAGE_NAME: github-actions-nginx
+  DOCKER_USERNAME: myusername
+  DOCKER_USER_PWD: myuserpwd
+
+jobs: 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: docker build
+      run: echo docker build -t $CONTAINER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest
+
+    - name: docker login
+      run: echo docker login --username=$DOCKER_USERNAME --password=$DOCKER_USER_PWD
+
+    - name: docker publish
+      run: echo docker push $CONTAINER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest
+
+
+  deploy:
+    timeout-minutes: 2
+    needs: docker
+    concurrency:
+      group: prod-deployment
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+    - name: Docker Run
+      timeout-minutes: 1
+      run: |
+        echo docker run -d -p 8080:80 $CONTAINER_REGISTRY/$DOCKER_USERNAME/$IMAGE_NAME:latest
+        sleep 600
