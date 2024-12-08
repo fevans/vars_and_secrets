@@ -11,11 +11,11 @@ jobs:
         os: [ubuntu-latest, ubuntu-20.04, windows-latest]
         images: [hello-world, alpine]
         exclude:
-        - images: alpine
-          on: windows-latest
+          - images: alpine
+            on: windows-latest
         include: 
-        - images: amd64/alpine
-          on: ubuntu-20.04
+          - images: amd64/alpine
+            on: ubuntu-20.04
     runs-on: ${{ matrix.os}}
     steps:
       - name: echo docker details
